@@ -2,60 +2,124 @@ package GUI.PANEL;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.net.URL;
 
 public class PhieuXuat extends JPanel {
 
     public PhieuXuat() {
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        // Sử dụng BorderLayout với khoảng cách 10 pixel
+        setLayout(new BorderLayout(10, 10));
 
-        JPanel topPanel = createTopPanel();
-        mainPanel.add(topPanel, BorderLayout.NORTH);
+        // --------- PHẦN NÚT CHỨC NĂNG (TOP) -----------
+        JPanel P = new JPanel(new BorderLayout());
+        JPanel P1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        JPanel leftPanel = createLeftFilterPanel();
-        mainPanel.add(leftPanel, BorderLayout.WEST);
+        // Nút Thêm
+        ImageIcon addIcon = resizeimg(new ImageIcon(getClass().getResource("/icon/them.png")));
+        JButton btnthem = createIconButton("Thêm", addIcon);
+        btnthem.setOpaque(false);
+        btnthem.setFocusPainted(false);
+        btnthem.setBorderPainted(false);
+        P1.add(btnthem);
 
-        setLayout(new BorderLayout());
-        add(mainPanel, BorderLayout.CENTER);
+        // Nút Chi tiết
+        ImageIcon chitieticon = resizeimg(new ImageIcon(getClass().getResource("/icon/chitiet.png")));
+        JButton btnchitiet = createIconButton("Chi tiêt", chitieticon);
+        btnchitiet.setOpaque(false);
+        btnchitiet.setFocusPainted(false);
+        btnchitiet.setBorderPainted(false);
+        P1.add(btnchitiet);
+
+        // Nút Hủy phiếu
+        ImageIcon huyphieuicon = resizeimg(new ImageIcon(getClass().getResource("/icon/huyphieu.png")));
+        JButton btnhuyphieu = createIconButton("Hủy phiếu", huyphieuicon);
+        btnhuyphieu.setOpaque(false);
+        btnhuyphieu.setFocusPainted(false);
+        btnhuyphieu.setBorderPainted(false);
+        P1.add(btnhuyphieu);
+
+        // Nút Xuất Excel
+        ImageIcon xuatexcelicon = resizeimg(new ImageIcon(getClass().getResource("/icon/xuatexcel.png")));
+        JButton btnxuatexcel = createIconButton("Xuất Excel", xuatexcelicon);
+        btnxuatexcel.setOpaque(false);
+        btnxuatexcel.setFocusPainted(false);
+        btnxuatexcel.setBorderPainted(false);
+        P1.add(btnxuatexcel);
+
+        // Nút Làm mới
+        ImageIcon lmcon = resizeimg(new ImageIcon(getClass().getResource("/icon/lammoi.png")));
+        JButton btnlm = createIconButton("Làm Mới", lmcon);
+        btnlm.setOpaque(false);
+        btnlm.setFocusPainted(false);
+        btnlm.setVerticalTextPosition(SwingConstants.CENTER);
+        btnlm.setHorizontalTextPosition(SwingConstants.RIGHT);
+
+        // Panel chứa công cụ tìm kiếm (bên phải của thanh chức năng)
+        JPanel P2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        String[] cb = {"Tất Cả", "Mã hóa đơn", "Khách hàng", "Nhân viên bán"};
+        JComboBox<String> pl = new JComboBox<>(cb);
+        pl.setPreferredSize(new Dimension(100, 40));
+        JTextField tf = new JTextField(20);
+        tf.setPreferredSize(new Dimension(100, 40));
+        P2.add(pl);
+        P2.add(tf);
+        P2.add(btnlm);
+
+        // Ghép hai panel con vào panel P
+        P.add(P1, BorderLayout.WEST);
+        P.add(P2, BorderLayout.EAST);
+
+        // Thêm panel chứa các nút chức năng vào phần NORTH của giao diện
+        add(P, BorderLayout.NORTH);
+
+        // --------- PHẦN GIAO DIỆN CHÍNH -----------
+        // Tạo một panel trung tâm để chứa cả bộ lọc tìm kiếm và khu vực hiển thị nội dung
+        JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
+
+        // Thêm bộ lọc tìm kiếm vào phần WEST
+        JPanel filterPanel = createLeftFilterPanel();
+        centerPanel.add(filterPanel, BorderLayout.WEST);
+
+        // Ví dụ: Thêm bảng dữ liệu vào phần CENTER (bạn có thể thay bảng mẫu này bằng bảng của bạn)
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Mã hóa đơn");
+        model.addColumn("Khách hàng");
+        model.addColumn("Nhân viên bán");
+        model.addColumn("Thời gian");
+        model.addColumn("Tổng tiền");
+
+        // Thêm một số dòng mẫu (các dòng này chỉ để minh họa)
+        model.addRow(new Object[]{"HD001", "Anh Khanh đẹp trai", "Nguyễn Văn A", "01/01/2025", "1,000,000"});
+        model.addRow(new Object[]{"HD002", "Anh Khang đẹp trai", "Trần Thị B", "02/01/2025", "2,000,000"});
+
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Thêm centerPanel vào phần CENTER của giao diện chính
+        add(centerPanel, BorderLayout.CENTER);
+
+        setVisible(true);
     }
 
-    private JPanel createTopPanel() {
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+    // Phương thức thay đổi kích thước icon
+    public ImageIcon resizeimg(ImageIcon img) {
+        Image tmp = img.getImage();
+        Image tmp2 = tmp.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+        return new ImageIcon(tmp2);
+    }
 
-        ImageIcon addIcon = loadIcon("/icon/them.png");
-        ImageIcon detailIcon = loadIcon("/icon/chitiet.png");
-        ImageIcon cancelIcon = loadIcon("/icon/huyphieu.png");
-        ImageIcon exportIcon = loadIcon("/icon/xuatexcel.png");
-        ImageIcon refreshIcon = loadIcon("/icon/lammoi.png");
-
-        JButton btnThem = createIconButton("THÊM", addIcon);
-        JButton btnChiTiet = createIconButton("CHI TIẾT", detailIcon);
-        JButton btnHuyPhieu = createIconButton("HUỶ PHIẾU", cancelIcon);
-        JButton btnXuatExcel = createIconButton("XUẤT EXCEL", exportIcon);
-
-        topPanel.add(btnThem);
-        topPanel.add(btnChiTiet);
-        topPanel.add(btnHuyPhieu);
-        topPanel.add(btnXuatExcel);
-
-        topPanel.add(Box.createHorizontalGlue());
-
-        String[] searchOptions = {"Tất cả", "Mã Phiếu", "Khách hàng", "Nhân viên xuất"};
-        JComboBox<String> cbSearchType = new JComboBox<>(searchOptions);
-        cbSearchType.setPreferredSize(new Dimension(150, 30));
-        topPanel.add(cbSearchType);
-
-        JTextField txtSearch = new JTextField("Nhập nội dung tìm kiếm .....", 20);
-        txtSearch.setPreferredSize(new Dimension(250, 30));
-        topPanel.add(txtSearch);
-
-        JButton btnLamMoi = new JButton("Làm mới");
-        if (refreshIcon != null) btnLamMoi.setIcon(refreshIcon);
-        topPanel.add(btnLamMoi);
-
-        return topPanel;
+    // Tạo nút có icon và text
+    private JButton createIconButton(String text, ImageIcon icon) {
+        JButton button = new JButton(text);
+        if (icon != null) {
+            button.setIcon(icon);
+        }
+        button.setVerticalTextPosition(SwingConstants.BOTTOM);
+        button.setHorizontalTextPosition(SwingConstants.CENTER);
+        return button;
     }
 
     private JPanel createLeftFilterPanel() {
@@ -75,114 +139,73 @@ public class PhieuXuat extends JPanel {
         gbc.gridy = 0;
         leftPanel.add(new JLabel("Khách hàng:"), gbc);
 
-        gbc.gridy = 1;
+        gbc.gridy++;
         gbc.weightx = 1.0;
-        JComboBox<String> cbKhachHang = new JComboBox<>(new String[]{
-                "Tất cả", "Công Ty TNHH Thế Giới Di Động", "Công Ty Samsung Việt Nam"
-        });
-        leftPanel.add(cbKhachHang, gbc);
+        leftPanel.add(new JComboBox<>(new String[] {
+                "Tất cả", "Nguyễn Văn A", "Trần Thị B"
+        }), gbc);
         gbc.weightx = 0;
 
-        gbc.gridy = 2;
-        leftPanel.add(new JLabel("Nhân viên xuất:"), gbc);
+        gbc.gridy++;
+        leftPanel.add(new JLabel("Nhân viên bán:"), gbc);
 
-        gbc.gridy = 3;
+        gbc.gridy++;
         gbc.weightx = 1.0;
-        JComboBox<String> cbNhanVien = new JComboBox<>(new String[]{
+        leftPanel.add(new JComboBox<>(new String[] {
                 "Tất cả", "Vũ Hồng Vĩnh Khang", "Nguyễn Văn Khanh", "Hàn Gia Hào"
-        });
-        leftPanel.add(cbNhanVien, gbc);
+        }), gbc);
         gbc.weightx = 0;
 
-        gbc.gridy = 4;
+        gbc.gridy++;
         leftPanel.add(new JLabel("Từ ngày:"), gbc);
 
-        gbc.gridy = 5;
+        gbc.gridy++;
         gbc.weightx = 1.0;
-        JPanel datePanelTu = new JPanel(new BorderLayout(5, 0));
-        datePanelTu.add(new JTextField(), BorderLayout.CENTER);
-        leftPanel.add(datePanelTu, gbc);
+        leftPanel.add(new JTextField(), gbc);
         gbc.weightx = 0;
 
-        gbc.gridy = 6;
+        gbc.gridy++;
         leftPanel.add(new JLabel("Đến ngày:"), gbc);
 
-        gbc.gridy = 7;
+        gbc.gridy++;
         gbc.weightx = 1.0;
-        JPanel datePanelDen = new JPanel(new BorderLayout(5, 0));
-        datePanelDen.add(new JTextField(), BorderLayout.CENTER);
-        leftPanel.add(datePanelDen, gbc);
+        leftPanel.add(new JTextField(), gbc);
         gbc.weightx = 0;
 
-        gbc.gridy = 8;
+        gbc.gridy++;
         leftPanel.add(new JLabel("Từ số tiền (VND):"), gbc);
 
-        gbc.gridy = 9;
+        gbc.gridy++;
         gbc.weightx = 1.0;
         leftPanel.add(new JTextField(), gbc);
         gbc.weightx = 0;
 
-        gbc.gridy = 10;
+        gbc.gridy++;
         leftPanel.add(new JLabel("Đến số tiền (VND):"), gbc);
 
-        gbc.gridy = 11;
+        gbc.gridy++;
         gbc.weightx = 1.0;
         leftPanel.add(new JTextField(), gbc);
-        gbc.weightx = 0;
 
-        gbc.gridy = 12;
+        gbc.weightx = 0;
+        gbc.gridy++;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.VERTICAL;
         leftPanel.add(new JLabel(), gbc);
 
-        leftPanel.setPreferredSize(new Dimension(220, leftPanel.getPreferredSize().height));
+//        leftPanel.setPreferredSize(new Dimension(220, leftPanel.getPreferredSize().height));
+        leftPanel.setPreferredSize(new Dimension(220, 0)); // hoặc có thể bỏ luôn
+
         return leftPanel;
-    }
-
-    private JButton createIconButton(String text, ImageIcon icon) {
-        JButton button = new JButton(text);
-        if (icon != null) {
-            button.setIcon(icon);
-        }
-        button.setVerticalTextPosition(SwingConstants.BOTTOM);
-        button.setHorizontalTextPosition(SwingConstants.CENTER);
-        return button;
-    }
-
-    private void setButtonFlat(JButton button) {
-        button.setBorderPainted(false);
-        button.setContentAreaFilled(false);
-        button.setFocusPainted(false);
-        button.setOpaque(false);
     }
 
     private ImageIcon loadIcon(String path) {
         URL imgURL = getClass().getResource(path);
         if (imgURL != null) {
-            ImageIcon icon = new ImageIcon(imgURL);
-            Image image = icon.getImage();
-            Image scaledImage = image.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
-            return new ImageIcon(scaledImage);
+            return new ImageIcon(imgURL);
         } else {
             System.err.println("Không thể tải icon: " + path);
             return null;
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                System.err.println("Không thể đặt Look and Feel của hệ thống.");
-            }
-
-            JFrame frame = new JFrame("Quản Lý Phiếu Xuất");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1200, 700);
-            frame.setLocationRelativeTo(null);
-            frame.setContentPane(new PhieuXuat());
-            frame.setVisible(true);
-        });
     }
 }

@@ -1,5 +1,7 @@
 package GUI;
 
+import GUI.PANEL.*;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -23,18 +25,18 @@ public class Main extends JFrame {
         contentPanel.setLayout(cardLayout);
 
         // Thêm các màn hình vào contentPanel
-        contentPanel.add(new JLabel("Trang chủ"), "trangchu");
-        contentPanel.add(new JLabel("Sản phẩm"), "sanpham");
-        contentPanel.add(new JLabel("Đặc trưng sản phẩm"), "dactrungsanpham");
-        contentPanel.add(new JLabel("Khu vực kho"), "khuvuckho");
-        contentPanel.add(new JLabel("Phiếu nhập"), "phieunhap");
-        contentPanel.add(new JLabel("Phiếu xuất"), "phieuxuat");
-        contentPanel.add(new JLabel("Khách hàng"), "khachhang");
-        contentPanel.add(new JLabel("Nhà cung cấp"), "nhacungcap");
-        contentPanel.add(new JLabel("Nhân viên"), "nhanvien");
-        contentPanel.add(new JLabel("Tài khoản"), "taikhoan");
+        contentPanel.add(new TrangChu(), "trangchu");
+        contentPanel.add(new SanPham(), "sanpham");
+        contentPanel.add(new DacTrung(), "dactrungsanpham");
+        contentPanel.add(new Kho(), "khuvuckho");
+        contentPanel.add(new PhieuNhap(), "phieunhap");
+        contentPanel.add(new PhieuXuat(), "phieuxuat");
+        contentPanel.add(new KhachHang(), "khachhang");
+        contentPanel.add(new NhaCungCap(), "nhacungcap");
+        contentPanel.add(new NhanVien(), "nhanvien");
+        contentPanel.add(new TaiKhoan(), "taikhoan");
         contentPanel.add(new JLabel("Thống kê"), "thongke");
-        contentPanel.add(new JLabel("Phân quyền"), "phanquyen");
+        contentPanel.add(new PhanQuyen(), "phanquyen");
         contentPanel.add(new JLabel("Đăng xuất"), "dangxuat");
 
         add(menuPanel, BorderLayout.WEST);
@@ -58,7 +60,7 @@ public class Main extends JFrame {
         panel.add(createMenuButton("Trang chủ", "trangchu", "/icon/trangchu.png"));
         panel.add(createMenuButton("Sản phẩm", "sanpham", "/icon/sanpham.png"));
         panel.add(createMenuButton("Đặc trưng", "dactrungsanpham", "/icon/dactrungsanpham.png"));
-        panel.add(createMenuButton("Khu vực kho", "khuvuckho", "/icon/khuvuckho.png"));
+        panel.add(createMenuButton("Kho", "khuvuckho", "/icon/khuvuckho.png"));
         panel.add(createMenuButton("Phiếu nhập", "phieunhap", "/icon/phieunhap.png"));
         panel.add(createMenuButton("Phiếu xuất", "phieuxuat", "/icon/phieuxuat.png"));
         panel.add(createMenuButton("Khách hàng", "khachhang", "/icon/khachhang.png"));
@@ -76,23 +78,32 @@ public class Main extends JFrame {
         Icon icon;
         java.net.URL imgURL = getClass().getResource(iconPath);
         if (imgURL != null) {
-            // Resize icon (20x20)
-            Image img = new ImageIcon(imgURL).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+            Image img = new ImageIcon(imgURL).getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
             icon = new ImageIcon(img);
         } else {
             System.err.println("Không tìm thấy icon: " + iconPath);
-            icon = UIManager.getIcon("OptionPane.informationIcon");  // Icon mặc định
+            icon = UIManager.getIcon("OptionPane.informationIcon");
         }
 
         JButton btn = new JButton(title, icon);
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
+        btn.setBorderPainted(false);
         btn.setIconTextGap(10);
-        btn.setMaximumSize(new Dimension(180, 40));
+        btn.setMaximumSize(new Dimension(180, 60));
         btn.setFocusPainted(false);
-        btn.setBackground(Color.WHITE);
+        btn.setBackground(new Color(240, 248, 255));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.addActionListener(e -> cardLayout.show(contentPanel, cardName));
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                btn.setBackground(new Color(182, 232, 243));
+            }
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                btn.setBackground(new Color(240, 248, 255));
+            }
+        });
         return btn;
     }
 

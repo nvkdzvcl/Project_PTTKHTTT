@@ -5,10 +5,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 
-public class SanPham extends JPanel {
-    public SanPham() {
-        setLayout(new BorderLayout(10, 10));
 
+
+public class Kho extends JPanel {
+    public Kho(){
+
+        setLayout(new BorderLayout(10, 10));
         JPanel P=new JPanel(new BorderLayout());
         JPanel P1=new JPanel();
 
@@ -40,13 +42,27 @@ public class SanPham extends JPanel {
         btnlm.setVerticalTextPosition(SwingConstants.CENTER);
         btnlm.setHorizontalTextPosition(SwingConstants.RIGHT);
 
+        ImageIcon nhapicon= resizeimg(new ImageIcon((getClass().getResource("/icon/nhapexcel.png"))));
+        JButton btnnhap=createIconButton("Nhập Excel",nhapicon);
+        btnnhap.setOpaque(false);
+        btnnhap.setFocusPainted(false);
+        btnnhap.setBorderPainted(false);
+
+        ImageIcon xuaticon=resizeimg(new ImageIcon((getClass().getResource("/icon/xuatexcel.png"))));
+        JButton btnxuat=createIconButton("Xuat", xuaticon);
+        btnxuat.setOpaque(false);
+        btnxuat.setFocusPainted(false);
+        btnxuat.setBorderPainted(false);
 
         P1.setLayout(new FlowLayout(FlowLayout.LEFT));
         P1.add(btnthem);
         P1.add(btnsua);
         P1.add(btnxoa);
+        P1.add(btnlm);
+        P1.add(btnnhap);
+        P1.add(btnxuat);
 
-        String[] cb={"Tất Cả","Top"};
+        String[] cb={"Tất Cả","Mã SP", "Tên SP"};
         JComboBox pl=new JComboBox(cb);
         pl.setPreferredSize(new Dimension(100,40));
         JTextField tf=new JTextField(20);
@@ -61,21 +77,21 @@ public class SanPham extends JPanel {
         add(P, BorderLayout.NORTH);
 
 
-        String[] collum={"Mã Sp","Tên Sản Phẩm","Số Lượng Tồn","Thương Hiệu","Hệ Điều Hành","Kích Thước Màn","Chip Xử Lý","Dung Lượng Pin","Xuất Xứ","Khu Vực Kho"};
-        JTable bangsp=new JTable();
+
+        String[] collum={"Mã SP","Tên SP"};
+        JTable bangnv=new JTable();
         DefaultTableModel model=new DefaultTableModel(collum,0);
-        bangsp.setModel(model);
+        bangnv.setModel(model);
 
 
-
-        JScrollPane scrollPane = new JScrollPane(bangsp);
+        JScrollPane scrollPane = new JScrollPane(bangnv);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        JTableHeader header = bangsp.getTableHeader();
+        JTableHeader header = bangnv.getTableHeader();
 
 
-
-        JButton them=new JButton("Thêm");
-        add(them);
+        bangnv.setShowGrid(false);
+//       JButton them=new JButton("Thêm");
+//         add(them);
         add(scrollPane,BorderLayout.CENTER);
 
         setVisible(true);
