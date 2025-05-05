@@ -2,14 +2,19 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.sql.*;
+
+import BLL.TaiKhoanBLL;
+import config.JDBCUtil;
 
 public class Login extends JFrame {
     private JTextField txtUsername;
     private JPasswordField txtPassword;
     private JLabel lblShowHide;
     private boolean isPasswordVisible = false;
+
+    TaiKhoanBLL taiKhoanBLL = new TaiKhoanBLL();
 
     public Login() {
         setTitle("Đăng nhập");
@@ -21,6 +26,10 @@ public class Login extends JFrame {
 
         add(initLeftPanel());
         add(initRightPanel());
+
+        //loadDefaultAccount();
+        txtUsername.setText("admin");
+        txtPassword.setText("12345678");
 
         setVisible(true);
     }
@@ -69,12 +78,6 @@ public class Login extends JFrame {
         });
         panel.add(lblShowHide);
 
-        JLabel lblForgot = new JLabel("Quên mật khẩu");
-        lblForgot.setBounds(270, 215, 120, 25);
-        lblForgot.setFont(new Font("SansSerif", Font.ITALIC, 13));
-        lblForgot.setForeground(Color.BLACK);
-        panel.add(lblForgot);
-
         JButton btnLogin = new JButton("ĐĂNG NHẬP");
         btnLogin.setBounds(70, 260, 300, 40);
         btnLogin.setBackground(Color.BLACK);
@@ -83,6 +86,29 @@ public class Login extends JFrame {
         btnLogin.setFont(new Font("SansSerif", Font.BOLD, 15));
         btnLogin.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+
+        btnLogin.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String username = txtUsername.getText().trim();
+                String password = new String(txtPassword.getPassword()).trim();
+
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(Login.this, "Vui lòng nhập đầy đủ thông tin đăng nhập");
+                    return;
+                }
+
+                if(taiKhoanBLL.checkLogin(username, password)){
+                    dispose();
+                    new Main(username);
+                }
+                else {
+                    JOptionPane.showMessageDialog(Login.this, "Tên đăng nhập hoặc mật khẩu không đúng!");
+                }
+            }
+        });
+
+
         panel.add(btnLogin);
 
         return panel;
