@@ -5,207 +5,187 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class PhieuXuat extends JPanel {
-
     public PhieuXuat() {
-        // Sử dụng BorderLayout với khoảng cách 10 pixel
         setLayout(new BorderLayout(10, 10));
 
         // --------- PHẦN NÚT CHỨC NĂNG (TOP) -----------
-        JPanel P = new JPanel(new BorderLayout());
-        JPanel P1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel topBar = new JPanel(new BorderLayout());
+        JPanel toolPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 5));
+        String[] btnTexts = {"Thêm", "Chi tiết", "Hủy phiếu"};
+        String[] btnIcons = {"/icon/them.png", "/icon/chitiet.png", "/icon/huyphieu.png"};
+        for (int i = 0; i < btnTexts.length; i++) {
+            JButton btn = createIconButton(btnTexts[i], resizeIcon(btnIcons[i]));
+            btn.setOpaque(false);
+            btn.setFocusPainted(false);
+            btn.setBorderPainted(false);
+            // Xử lý sự kiện cho nút Thêm
+            if ("Thêm".equals(btnTexts[i])) {
+                btn.addActionListener(e -> {
+                    JDialog dlg = new JDialog(
+                            (Frame) SwingUtilities.getWindowAncestor(this),
+                            "Thêm Phiếu Xuất", true
+                    );
+                    dlg.setContentPane(new ThemPhieuNhap());
+                    dlg.pack();
+                    dlg.setLocationRelativeTo(this);
+                    dlg.setVisible(true);
+                });
+            }
+            toolPanel.add(btn);
+        }
+        topBar.add(toolPanel, BorderLayout.WEST);
 
-        // Nút Thêm
-        ImageIcon addIcon = resizeimg(new ImageIcon(getClass().getResource("/icon/them.png")));
-        JButton btnthem = createIconButton("Thêm", addIcon);
-        btnthem.setOpaque(false);
-        btnthem.setFocusPainted(false);
-        btnthem.setBorderPainted(false);
-        P1.add(btnthem);
+        JPanel quickFilter = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 5));
+        JComboBox<String> cbFilter = new JComboBox<>(new String[]{"Tất Cả", "Mã phiếu nhập", "Khách hàng", "Nhân viên xuất"});
+        cbFilter.setPreferredSize(new Dimension(140, 30));
+        JTextField tfSearch = new JTextField("Nhập nội dung tìm kiếm...");
+        tfSearch.setPreferredSize(new Dimension(180, 30));
+        addPlaceholder(tfSearch, "Nhập nội dung tìm kiếm...");
+        JButton btnRefresh = createIconButton("", resizeIcon("/icon/lammoi.png"));
+        quickFilter.add(cbFilter);
+        quickFilter.add(tfSearch);
+        quickFilter.add(btnRefresh);
+        topBar.add(quickFilter, BorderLayout.EAST);
 
-        // Nút Chi tiết
-        ImageIcon chitieticon = resizeimg(new ImageIcon(getClass().getResource("/icon/chitiet.png")));
-        JButton btnchitiet = createIconButton("Chi tiêt", chitieticon);
-        btnchitiet.setOpaque(false);
-        btnchitiet.setFocusPainted(false);
-        btnchitiet.setBorderPainted(false);
-        P1.add(btnchitiet);
-
-        // Nút Hủy phiếu
-        ImageIcon huyphieuicon = resizeimg(new ImageIcon(getClass().getResource("/icon/huyphieu.png")));
-        JButton btnhuyphieu = createIconButton("Hủy phiếu", huyphieuicon);
-        btnhuyphieu.setOpaque(false);
-        btnhuyphieu.setFocusPainted(false);
-        btnhuyphieu.setBorderPainted(false);
-        P1.add(btnhuyphieu);
-
-        // Nút Xuất Excel
-        ImageIcon xuatexcelicon = resizeimg(new ImageIcon(getClass().getResource("/icon/xuatexcel.png")));
-        JButton btnxuatexcel = createIconButton("Xuất Excel", xuatexcelicon);
-        btnxuatexcel.setOpaque(false);
-        btnxuatexcel.setFocusPainted(false);
-        btnxuatexcel.setBorderPainted(false);
-        P1.add(btnxuatexcel);
-
-        // Nút Làm mới
-        ImageIcon lmcon = resizeimg(new ImageIcon(getClass().getResource("/icon/lammoi.png")));
-        JButton btnlm = createIconButton("Làm Mới", lmcon);
-        btnlm.setOpaque(false);
-        btnlm.setFocusPainted(false);
-        btnlm.setVerticalTextPosition(SwingConstants.CENTER);
-        btnlm.setHorizontalTextPosition(SwingConstants.RIGHT);
-
-        // Panel chứa công cụ tìm kiếm (bên phải của thanh chức năng)
-        JPanel P2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        String[] cb = {"Tất Cả", "Mã hóa đơn", "Khách hàng", "Nhân viên bán"};
-        JComboBox<String> pl = new JComboBox<>(cb);
-        pl.setPreferredSize(new Dimension(100, 40));
-        JTextField tf = new JTextField(20);
-        tf.setPreferredSize(new Dimension(100, 40));
-        P2.add(pl);
-        P2.add(tf);
-        P2.add(btnlm);
-
-        // Ghép hai panel con vào panel P
-        P.add(P1, BorderLayout.WEST);
-        P.add(P2, BorderLayout.EAST);
-
-        // Thêm panel chứa các nút chức năng vào phần NORTH của giao diện
-        add(P, BorderLayout.NORTH);
+        add(topBar, BorderLayout.NORTH);
 
         // --------- PHẦN GIAO DIỆN CHÍNH -----------
-        // Tạo một panel trung tâm để chứa cả bộ lọc tìm kiếm và khu vực hiển thị nội dung
-        JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        mainPanel.add(createLeftFilterPanel(), BorderLayout.WEST);
 
-        // Thêm bộ lọc tìm kiếm vào phần WEST
-        JPanel filterPanel = createLeftFilterPanel();
-        centerPanel.add(filterPanel, BorderLayout.WEST);
-
-        // Ví dụ: Thêm bảng dữ liệu vào phần CENTER (bạn có thể thay bảng mẫu này bằng bảng của bạn)
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Mã hóa đơn");
-        model.addColumn("Khách hàng");
-        model.addColumn("Nhân viên bán");
-        model.addColumn("Thời gian");
-        model.addColumn("Tổng tiền");
-
-        // Thêm một số dòng mẫu (các dòng này chỉ để minh họa)
-        model.addRow(new Object[]{"HD001", "Anh Khanh đẹp trai", "Nguyễn Văn A", "01/01/2025", "1,000,000"});
-        model.addRow(new Object[]{"HD002", "Anh Khang đẹp trai", "Trần Thị B", "02/01/2025", "2,000,000"});
-
+        String[] columns = {"Mã phiếu xuất", "Khách hàng", "Nhân viên xuất", "Thời gian", "Tổng tiền"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override public boolean isCellEditable(int row, int col) { return false; }
+        };
         JTable table = new JTable(model);
+        table.setRowHeight(24);
         JScrollPane scrollPane = new JScrollPane(table);
-        centerPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        add(mainPanel, BorderLayout.CENTER);
 
-        // Thêm centerPanel vào phần CENTER của giao diện chính
-        add(centerPanel, BorderLayout.CENTER);
+        // Thêm 25 dòng sample data, thời gian tăng dần từ 01/06/2024 với bước 15 ngày
+        String[] providers = {
+                "Nguyễn Văn A",    "Trần Thị B",      "Lê Văn C",        "Phạm Thị D",      "Hoàng Văn E",
+                "Vũ Thị F",        "Đặng Văn G",      "Bùi Thị H",       "Trương Văn I",    "Phan Thị K",
+                "Lý Văn L",        "Đỗ Thị M",        "Ngô Văn N",       "Dương Thị O",     "Võ Văn P",
+                "Lê Thị Q",        "Nguyễn Văn R",    "Trần Thị S",      "Phạm Văn T",      "Hoàng Thị U",
+                "Vũ Văn V",        "Đặng Thị W",      "Bùi Văn X",       "Trương Thị Y",    "Phan Văn Z"
+        };
 
-        setVisible(true);
-    }
+        String[] staffers  = {"Nguyễn Văn A", "Trần Thị B", "Lê Thị C", "Phạm Văn D", "Hoàng Hạ E"};
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        GregorianCalendar startCal = new GregorianCalendar(2024, Calendar.JUNE, 1, 9, 30);
+        for (int i = 0; i < 25; i++) {
+            String code  = String.format("PX%03d", i+1);
+            String prov  = providers[i % providers.length];
+            String staff = staffers[i % staffers.length];
 
-    // Phương thức thay đổi kích thước icon
-    public ImageIcon resizeimg(ImageIcon img) {
-        Image tmp = img.getImage();
-        Image tmp2 = tmp.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-        return new ImageIcon(tmp2);
-    }
+            Calendar c = (Calendar) startCal.clone();
+            c.add(Calendar.DAY_OF_MONTH, i * 15);
+            String dateStr = sdf.format(c.getTime());
 
-    // Tạo nút có icon và text
-    private JButton createIconButton(String text, ImageIcon icon) {
-        JButton button = new JButton(text);
-        if (icon != null) {
-            button.setIcon(icon);
+            int amount = 2_000_000 + ((i * 3) % 90) * 1_000_000; // 20–110 triệu
+            String totalStr = String.format("%,d", amount);
+
+            model.addRow(new Object[]{code, prov, staff, dateStr, totalStr});
         }
-        button.setVerticalTextPosition(SwingConstants.BOTTOM);
-        button.setHorizontalTextPosition(SwingConstants.CENTER);
-        return button;
     }
 
     private JPanel createLeftFilterPanel() {
-        JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new GridBagLayout());
-        leftPanel.setBorder(BorderFactory.createCompoundBorder(
+        JPanel left = new JPanel(new GridBagLayout());
+        left.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Bộ lọc tìm kiếm"),
-                new EmptyBorder(5, 5, 5, 10)
+                new EmptyBorder(5, 5, 5, 5)
         ));
+        left.setPreferredSize(new Dimension(240, 0));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        leftPanel.add(new JLabel("Khách hàng:"), gbc);
-
-        gbc.gridy++;
-        gbc.weightx = 1.0;
-        leftPanel.add(new JComboBox<>(new String[] {
-                "Tất cả", "Nguyễn Văn A", "Trần Thị B"
-        }), gbc);
+        gbc.fill    = GridBagConstraints.HORIZONTAL;
+        gbc.insets  = new Insets(4, 4, 4, 4);
+        gbc.anchor  = GridBagConstraints.WEST;
         gbc.weightx = 0;
 
-        gbc.gridy++;
-        leftPanel.add(new JLabel("Nhân viên bán:"), gbc);
-
-        gbc.gridy++;
-        gbc.weightx = 1.0;
-        leftPanel.add(new JComboBox<>(new String[] {
-                "Tất cả", "Vũ Hồng Vĩnh Khang", "Nguyễn Văn Khanh", "Hàn Gia Hào"
-        }), gbc);
+        int y = 0;
+        gbc.gridx = 0; gbc.gridy = y++;
+        left.add(new JLabel("Nhà cung cấp:"), gbc);
+        gbc.gridy = y++; gbc.weightx = 1.0;
+        left.add(new JComboBox<>(new String[]{"Tất cả", "Công Ty A", "Công Ty B", "Công Ty C"}), gbc);
         gbc.weightx = 0;
 
-        gbc.gridy++;
-        leftPanel.add(new JLabel("Từ ngày:"), gbc);
-
-        gbc.gridy++;
-        gbc.weightx = 1.0;
-        leftPanel.add(new JTextField(), gbc);
+        gbc.gridy = y++;
+        left.add(new JLabel("Nhân viên xuất:"), gbc);
+        gbc.gridy = y++; gbc.weightx = 1.0;
+        left.add(new JComboBox<>(new String[]{"Tất cả", "Nguyễn Văn A", "Trần Thị B", "Lê Thị C"}), gbc);
         gbc.weightx = 0;
 
-        gbc.gridy++;
-        leftPanel.add(new JLabel("Đến ngày:"), gbc);
-
-        gbc.gridy++;
-        gbc.weightx = 1.0;
-        leftPanel.add(new JTextField(), gbc);
+        gbc.gridy = y++;
+        left.add(new JLabel("Từ ngày:"), gbc);
+        gbc.gridy = y++; gbc.weightx = 1.0;
+        JSpinner spFrom = new JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
+        spFrom.setEditor(new JSpinner.DateEditor(spFrom, "dd/MM/yyyy HH:mm"));
+        left.add(spFrom, gbc);
         gbc.weightx = 0;
 
-        gbc.gridy++;
-        leftPanel.add(new JLabel("Từ số tiền (VND):"), gbc);
-
-        gbc.gridy++;
-        gbc.weightx = 1.0;
-        leftPanel.add(new JTextField(), gbc);
+        gbc.gridy = y++;
+        left.add(new JLabel("Đến ngày:"), gbc);
+        gbc.gridy = y++; gbc.weightx = 1.0;
+        JSpinner spTo = new JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
+        spTo.setEditor(new JSpinner.DateEditor(spTo, "dd/MM/yyyy HH:mm"));
+        left.add(spTo, gbc);
         gbc.weightx = 0;
 
-        gbc.gridy++;
-        leftPanel.add(new JLabel("Đến số tiền (VND):"), gbc);
+        gbc.gridy = y++; gbc.gridwidth = 1; gbc.weightx = 1.0;
+        JButton btnApply = new JButton("Áp dụng");
+        left.add(btnApply, gbc);
 
-        gbc.gridy++;
-        gbc.weightx = 1.0;
-        leftPanel.add(new JTextField(), gbc);
+        // Nút "Xóa bộ lọc"
+        gbc.gridy = y++;
+        JButton btnClear = new JButton("Xóa bộ lọc");
+        left.add(btnClear, gbc);
 
-        gbc.weightx = 0;
-        gbc.gridy++;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.VERTICAL;
-        leftPanel.add(new JLabel(), gbc);
-
-//        leftPanel.setPreferredSize(new Dimension(220, leftPanel.getPreferredSize().height));
-        leftPanel.setPreferredSize(new Dimension(220, 0)); // hoặc có thể bỏ luôn
-
-        return leftPanel;
+        return left;
     }
 
-    private ImageIcon loadIcon(String path) {
-        URL imgURL = getClass().getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            System.err.println("Không thể tải icon: " + path);
-            return null;
+    private ImageIcon resizeIcon(String path) {
+        URL url = getClass().getResource(path);
+        if (url != null) {
+            ImageIcon icon = new ImageIcon(url);
+            Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+            return new ImageIcon(img);
         }
+        return null;
+    }
+
+    private JButton createIconButton(String text, ImageIcon icon) {
+        JButton btn = new JButton(text, icon);
+        btn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        btn.setHorizontalTextPosition(SwingConstants.CENTER);
+        btn.setPreferredSize(new Dimension(90, 60));
+        return btn;
+    }
+
+    private void addPlaceholder(JTextField tf, String ph) {
+        tf.setForeground(Color.GRAY);
+        tf.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent e) {
+                if (tf.getText().equals(ph)) {
+                    tf.setText("");
+                    tf.setForeground(Color.BLACK);
+                }
+            }
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (tf.getText().isEmpty()) {
+                    tf.setText(ph);
+                    tf.setForeground(Color.GRAY);
+                }
+            }
+        });
     }
 }

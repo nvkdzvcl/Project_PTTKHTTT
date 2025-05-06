@@ -30,13 +30,13 @@ public class DacTrung extends JPanel {
 
         // Thêm các panel thuộc tính vào lưới
         // ** QUAN TRỌNG: Thay thế các đường dẫn icon bên dưới bằng đường dẫn thực tế của bạn **
-        add(createAttributePanel("../../icon/dactrungsanpham.png", "Loại sản phẩm"));
-        add(createAttributePanel("../../icon/gioitinh.png", "Giới tính"));
-        add(createAttributePanel("../../icon/size.png", "Size"));
-        add(createAttributePanel("../../icon/mau.png", "Màu sắc"));
-        add(createAttributePanel("../../icon/chatlieu.png", "Chất liệu"));
-        add(createAttributePanel("../../icon/thuonghieu.png", "Thương hiệu")); // Giả sử là icon chip cho Rom
-        add(createAttributePanel("../../icon/xuatxu.png", "Xuất xứ"));
+        add(createAttributePanel("../../icon/loaisanpham.png", "Loại sản phẩm"));
+//        add(createAttributePanel("../../icon/gioitinh.png", "Giới tính"));
+//        add(createAttributePanel("../../icon/size.png", "Size"));
+//        add(createAttributePanel("../../icon/mau.png", "Màu sắc"));
+//        add(createAttributePanel("../../icon/chatlieu.png", "Chất liệu"));
+//        add(createAttributePanel("../../icon/thuonghieu.png", "Thương hiệu")); // Giả sử là icon chip cho Rom
+//        add(createAttributePanel("../../icon/xuatxu.png", "Xuất xứ"));
     }
 
     private JPanel createAttributePanel(String iconPath, String labelText) {
@@ -126,6 +126,52 @@ public class DacTrung extends JPanel {
                 // Ví dụ: Mở cửa sổ quản lý cho thuộc tính này
                 // openAttributeManagementWindow(labelText);
                 // ===========================================
+            }
+        });
+        panel.addMouseListener(new MouseAdapter() {
+            // … các override mouseEntered, mouseExited, v.v. …
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("Đã nhấp vào: " + labelText);
+
+                // Nếu là ô "Màu sắc" thì mở dialog quản lý màu
+                if ("Màu sắc".equals(labelText)) {
+                    // Lấy parent window để dialog nằm giữa
+                    Window win = SwingUtilities.getWindowAncestor(panel);
+                    MauSacDialog dlg = new MauSacDialog(win instanceof Frame ? (Frame)win : null);
+                    dlg.setVisible(true);
+                }
+                if ("Loại sản phẩm".equals(labelText)) {
+                    // Lấy parent window để dialog nằm giữa
+                    Window win = SwingUtilities.getWindowAncestor(panel);
+                    LoaiSanPhamDialog dlg = new LoaiSanPhamDialog(win instanceof Frame ? (Frame)win : null);
+                    dlg.setVisible(true);
+                }
+                if ("Size".equals(labelText)) {
+                    // Lấy parent window để dialog nằm giữa
+                    Window win = SwingUtilities.getWindowAncestor(panel);
+                    SizeDialog dlg = new SizeDialog(win instanceof Frame ? (Frame)win : null);
+                    dlg.setVisible(true);
+                }
+                if ("Chất liệu".equals(labelText)) {
+                    // Lấy parent window để dialog nằm giữa
+                    Window win = SwingUtilities.getWindowAncestor(panel);
+                    ChatLieuDialog dlg = new ChatLieuDialog(win instanceof Frame ? (Frame)win : null);
+                    dlg.setVisible(true);
+                }
+                if ("Thương hiệu".equals(labelText)) {
+                    // Lấy parent window để dialog nằm giữa
+                    Window win = SwingUtilities.getWindowAncestor(panel);
+                    ThuongHieuDialog dlg = new ThuongHieuDialog(win instanceof Frame ? (Frame)win : null);
+                    dlg.setVisible(true);
+                }
+                if ("Xuất xứ".equals(labelText)) {
+                    // Lấy parent window để dialog nằm giữa
+                    Window win = SwingUtilities.getWindowAncestor(panel);
+                    XuatXuDialog dlg = new XuatXuDialog(win instanceof Frame ? (Frame)win : null);
+                    dlg.setVisible(true);
+                }
             }
         });
 

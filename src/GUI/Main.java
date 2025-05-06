@@ -1,6 +1,7 @@
 package GUI;
 
 import GUI.PANEL.*;
+import GUI.PANEL.ThongKe.ThongKe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +13,7 @@ public class Main extends JFrame {
     public Main() {
         setTitle("Hệ thống quản lý kho hàng");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1200, 700);
+        setSize(1300, 700);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
@@ -28,14 +29,15 @@ public class Main extends JFrame {
         contentPanel.add(new TrangChu(), "trangchu");
         contentPanel.add(new SanPham(), "sanpham");
         contentPanel.add(new DacTrung(), "dactrungsanpham");
-        contentPanel.add(new Kho(), "khuvuckho");
+        contentPanel.add(new KhuVucKho(), "khuvuckho");
         contentPanel.add(new PhieuNhap(), "phieunhap");
         contentPanel.add(new PhieuXuat(), "phieuxuat");
         contentPanel.add(new KhachHang(), "khachhang");
         contentPanel.add(new NhaCungCap(), "nhacungcap");
         contentPanel.add(new NhanVien(), "nhanvien");
         contentPanel.add(new TaiKhoan(), "taikhoan");
-        contentPanel.add(new JLabel("Thống kê"), "thongke");
+        contentPanel.add(new PhieuKiemKe(), "phieukiemke");
+        contentPanel.add(new ThongKe(), "thongke");
         contentPanel.add(new PhanQuyen(), "phanquyen");
         contentPanel.add(new JLabel("Đăng xuất"), "dangxuat");
 
@@ -60,13 +62,14 @@ public class Main extends JFrame {
         panel.add(createMenuButton("Trang chủ", "trangchu", "/icon/trangchu.png"));
         panel.add(createMenuButton("Sản phẩm", "sanpham", "/icon/sanpham.png"));
         panel.add(createMenuButton("Đặc trưng", "dactrungsanpham", "/icon/dactrungsanpham.png"));
-        panel.add(createMenuButton("Kho", "khuvuckho", "/icon/khuvuckho.png"));
+        panel.add(createMenuButton("Khu vực kho", "khuvuckho", "/icon/khuvuckho.png"));
         panel.add(createMenuButton("Phiếu nhập", "phieunhap", "/icon/phieunhap.png"));
         panel.add(createMenuButton("Phiếu xuất", "phieuxuat", "/icon/phieuxuat.png"));
         panel.add(createMenuButton("Khách hàng", "khachhang", "/icon/khachhang.png"));
         panel.add(createMenuButton("Nhà cung cấp", "nhacungcap", "/icon/nhacungcap.png"));
         panel.add(createMenuButton("Nhân viên", "nhanvien", "/icon/nhanvien.png"));
         panel.add(createMenuButton("Tài khoản", "taikhoan", "/icon/taikhoan.png"));
+        panel.add(createMenuButton("Phiếu kiểm kê", "phieukiemke", "/icon/phieukiemke.png"));
         panel.add(createMenuButton("Thống kê", "thongke", "/icon/thongke.png"));
         panel.add(createMenuButton("Phân quyền", "phanquyen", "/icon/phanquyen.png"));
         panel.add(createMenuButton("Đăng xuất", "dangxuat", "/icon/dangxuat.png"));
